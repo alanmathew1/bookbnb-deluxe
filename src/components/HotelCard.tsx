@@ -4,12 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface HotelCardProps {
-  id: number;
+  id: string;
   name: string;
   location: string;
   price: number;
   rating: number;
-  reviews: number;
   image: string;
   amenities: string[];
   featured?: boolean;
@@ -20,7 +19,6 @@ const HotelCard = ({
   location,
   price,
   rating,
-  reviews,
   image,
   amenities,
   featured,
@@ -61,11 +59,8 @@ const HotelCard = ({
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm font-medium">
             <Star className="h-3 w-3 fill-current" />
-            <span>{rating}</span>
+            <span>{rating.toFixed(1)}</span>
           </div>
-          <span className="text-sm text-muted-foreground">
-            ({reviews} reviews)
-          </span>
         </div>
 
         <div className="flex flex-wrap gap-2">

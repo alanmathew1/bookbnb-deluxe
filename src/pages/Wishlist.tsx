@@ -84,7 +84,6 @@ const Wishlist = () => {
                 location={item.hotel.location}
                 price={Number(item.hotel.price_per_night)}
                 rating={Number(item.hotel.rating)}
-                reviews={0}
                 image={item.hotel.image_url || ""}
                 amenities={[]}
               />

@@ -1,13 +1,62 @@
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import HeroSearch from "@/components/HeroSearch";
 import HotelCard from "@/components/HotelCard";
 import SearchFilters from "@/components/SearchFilters";
-import { hotelsData } from "@/data/hotelsData";
+import { supabase } from "@/integrations/supabase/client";
 import { TrendingUp } from "lucide-react";
+import { toast } from "sonner";
+
+type Hotel = {
+  id: string;
+  name: string;
+  location: string;
+  price_per_night: number;
+  rating: number;
+  image_url: string;
+  amenities: string[];
+  description?: string;
+};
 
 const Index = () => {
-  const featuredHotels = hotelsData.filter((hotel) => hotel.featured);
-  const allHotels = hotelsData;
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchHotels();
+  }, []);
+
+  const fetchHotels = async () => {
+    const { data, error } = await supabase
+      .from("hotels")
+      .select("*")
+      .order("rating", { ascending: false });
+
+    if (error) {
+      toast.error("Failed to load hotels");
+      console.error(error);
+    } else {
+      setHotels(data || []);
+    }
+    setIsLoading(false);
+  };
+
+  const featuredHotels = hotels.slice(0, 3);
+  const allHotels = hotels;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <HeroSearch />
+        <div className="container py-16">
+          <div className="flex items-center justify-center h-64">
+            <p className="text-muted-foreground">Loading hotels...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -22,7 +71,16 @@ const Index = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredHotels.map((hotel) => (
-            <HotelCard key={hotel.id} {...hotel} />
+            <HotelCard
+              key={hotel.id}
+              id={hotel.id}
+              name={hotel.name}
+              location={hotel.location}
+              price={Number(hotel.price_per_night)}
+              rating={Number(hotel.rating)}
+              image={hotel.image_url || ""}
+              amenities={hotel.amenities || []}
+            />
           ))}
         </div>
       </section>
@@ -35,7 +93,16 @@ const Index = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {allHotels.map((hotel) => (
-            <HotelCard key={hotel.id} {...hotel} />
+            <HotelCard
+              key={hotel.id}
+              id={hotel.id}
+              name={hotel.name}
+              location={hotel.location}
+              price={Number(hotel.price_per_night)}
+              rating={Number(hotel.rating)}
+              image={hotel.image_url || ""}
+              amenities={hotel.amenities || []}
+            />
           ))}
         </div>
       </section>
